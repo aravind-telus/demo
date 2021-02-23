@@ -1,0 +1,56 @@
+<configuration>
+    <property name="LOGS_DIRECTORY" value="./log"/>
+    <property name="LOG_FILE_NAME" value="app.log"/>
+    <property name="ROOT_LOGGER_LEVEL" value="info"/>
+    <property name="APP_LOGGER_LEVEL" value="info"/>
+    <property name="APP_PACKAGE" value="com.telushealth.dwh"/>
+
+    <logger name="${APP_PACKAGE}" level="${APP_LOGGER_LEVEL}"/>
+
+    <!-- Logging configuration for local developer workspaces, enable local/dev/test spring profile -->
+    <springProfile name="local,dev,test">
+        <appender name="CONSOLE_APPENDER_DEV" class="ch.qos.logback.core.ConsoleAppender">
+            <layout class="ch.qos.logback.classic.PatternLayout">
+                <Pattern>
+                    %black(%d{ISO8601}) %highlight(%-5level) [%blue(%t)] [%X{traceId:-},%X{spanId:-}]] %blue(%C{6}): %boldBlue(%msg%n%throwable)
+                </Pattern>
+            </layout>
+        </appender>
+        <root level="${ROOT_LOGGER_LEVEL}">
+            <appender-ref ref="CONSOLE_APPENDER_DEV"/>
+        </root>
+    </springProfile>
+
+    <!--  Logging configuration for qa, prod deployments -->
+    <springProfile name="qa,prd, default">
+        <!-- Console/STDOUT appender -->
+        <appender name="CONSOLE_APPENDER" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+                <timeZone>UTC</timeZone>
+                <shortenedLoggerNameLength>36</shortenedLoggerNameLength>
+                <fieldNames>
+                    <levelValue>[ignore]</levelValue>
+                </fieldNames>
+                <includeMdcKeyName>spanId</includeMdcKeyName>
+                <includeMdcKeyName>traceId</includeMdcKeyName>
+                <providers>
+                    <stackTrace>
+                        <throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
+                            <maxDepthPerThrowable>20</maxDepthPerThrowable>
+                            <maxLength>2048</maxLength>
+                            <shortenedClassNameLength>5</shortenedClassNameLength>
+                            <exclude>^sun\.reflect\..*\.invoke</exclude>
+                            <exclude>^net\.sf\.cglib\.proxy\.MethodProxy\.invoke</exclude>
+                            <rootCauseFirst>true</rootCauseFirst>
+                        </throwableConverter>
+                    </stackTrace>
+                </providers>
+            </encoder>
+        </appender>
+        <root level="${ROOT_LOGGER_LEVEL}">
+            <appender-ref ref="CONSOLE_APPENDER"/>
+        </root>
+    </springProfile>
+
+
+</configuration>
