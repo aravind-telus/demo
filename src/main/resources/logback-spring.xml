@@ -3,7 +3,6 @@
     <property name="LOG_FILE_NAME" value="app.log"/>
     <property name="ROOT_LOGGER_LEVEL" value="info"/>
     <property name="APP_LOGGER_LEVEL" value="info"/>
-    <property name="APP_PACKAGE" value="com.telushealth.dwh"/>
 
     <logger name="${APP_PACKAGE}" level="${APP_LOGGER_LEVEL}"/>
 
